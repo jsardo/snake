@@ -1,20 +1,22 @@
 import java.applet.Applet;
-import java.awt.*;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-public class Snake extends Applet implements KeyListener {
-	
+public class Snake extends Applet implements KeyListener 
+{
 	int UP = 0, RIGHT = 1, DOWN = 2, LEFT = 3, NEXT_MOVE, nsnake = 0, nmove = 0, speed = 1, ncord = 0, score = 0;
 	int PREV_MOVE = DOWN, CURRENT_MOVE = PREV_MOVE;
-	int x, y, RAND_MAX = 600, RAND_MIN = 20;
-	int XMAX = 600, YMAX = 400;
+	int x, y, RAND_MAX = 380, RAND_MIN = 20;
+	int XMAX = 400, YMAX = 300;
 	int snake[][]     = new int[100][3];
 	int move_list[]   = new int[1000];
 	int cord_list[][] = new int[1000][2];
 	
 	boolean up, down, right, left, eaten = false;
-	int count = 1;
+
 	private Image dbImage;
 	private Graphics dbg;
 
@@ -160,15 +162,15 @@ public class Snake extends Applet implements KeyListener {
 		speed = 0;
 		Font font = new Font("Arial", Font.PLAIN, 30);
 	    g.setFont(font);
-	    g.drawString("GAME OVER", 210, 200);
-	    g.drawString("Score: " + score, 210, 240);
+	    g.drawString("GAME OVER", 110, 200);
+	    g.drawString("Score: " + score, 110, 240);
 	    repaint();
 	}
 	
 	public void update_score(Graphics g)
 	{
-		g.drawRect(500, 0, 100, 100);
-		g.drawString("Score: " + score, 520, 20);
+		g.drawRect(299, 0, 100, 100);
+		g.drawString("Score: " + score, 320 ,20);
 	}
 	
 	@Override
@@ -176,51 +178,35 @@ public class Snake extends Applet implements KeyListener {
 	{
 		int key = e.getKeyCode(), dir = move_list[snake[0][2]];
 		
-		
 		if (key == e.VK_UP && dir != DOWN && dir != UP) {
 			NEXT_MOVE = UP;
 			move_list[nmove++] = UP;
 			CURRENT_MOVE = UP;
-			up = true;
 		}
 		else if (key == e.VK_RIGHT && dir != LEFT && dir != RIGHT) {
 			NEXT_MOVE = RIGHT;
 			move_list[nmove++] = RIGHT;
 			CURRENT_MOVE = RIGHT;
-			right = true;
 		}
 		else if (key == e.VK_DOWN && dir != UP && dir != DOWN) { 
 			NEXT_MOVE = DOWN;
 			move_list[nmove++] = DOWN;
 			CURRENT_MOVE = DOWN;
-			down = true;
 		}
 		else if (key == e.VK_LEFT && dir != RIGHT && dir != LEFT) {
 			NEXT_MOVE = LEFT;
 			move_list[nmove++] = LEFT;
 			CURRENT_MOVE = LEFT;
-			left = true;
 		}
 	}
 
 	@Override
-	public void keyReleased(KeyEvent e) {
-		int key = e.getKeyCode();
-	    
-	    if (key == e.VK_UP)
-	      up = false;
-	    if (key == e.VK_DOWN)
-	      down = false;
-	    if (key == e.VK_RIGHT)
-	    	right = false;
-	    if (key == e.VK_LEFT)
-	    	left = false;
-	}
+	public void keyReleased(KeyEvent e) {}
 
 	@Override
 	public void keyTyped(KeyEvent e) {}
 	
-	public void update(Graphics g)
+	public void update(Graphics g) // Smoother graphics.
 	  {
 	    if (dbImage == null) {
 	      dbImage = createImage(this.getSize().width, this.getSize().height);
