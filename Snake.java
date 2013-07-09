@@ -14,15 +14,15 @@ public class Snake extends Applet implements KeyListener {
 	int cord_list[][] = new int[1000][2];
 	
 	boolean up, down, right, left, eaten = false;
-	
+	int count = 1;
 	private Image dbImage;
 	private Graphics dbg;
 
 	public void init()
 	{
-		add_snake(100, 100, 0);
-		add_snake(100, 85, 0);
-		add_snake(100, 70, 0);
+		add_snake(100, 30, 0);
+		add_snake(100, 15, 0);
+		add_snake(100, 0, 0);
 		x = get_rand(RAND_MAX, RAND_MIN);
 		y = get_rand(YMAX - 50, RAND_MIN);
 		move_list[nmove++] = DOWN;
@@ -33,6 +33,42 @@ public class Snake extends Applet implements KeyListener {
 	}
 	
 	public void paint(Graphics g)
+	{
+		try {
+			Thread.sleep(3); // Slow down the speed of the snake.
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		move_snake(g);
+		check_apple_collision(g);
+		
+		PREV_MOVE = CURRENT_MOVE;
+		if (collision(snake[0][0], snake[0][1]))
+			end_game(g);
+		update_score(g);
+		
+		repaint();
+	}
+	
+	public void add_snake(int x, int y, int dir)
+	{
+		snake[nsnake][0] = x;
+		snake[nsnake][1] = y;
+		snake[nsnake][2] = dir;
+		nsnake++;
+	}
+	
+	public boolean on_cord(int x, int y)
+	{
+		for (int i = 0; i < ncord; ++i)
+		{
+			if (cord_list[i][0] == x && cord_list[i][1] == y)
+				return true;
+		}
+		return false;
+	}
+	
+	public void move_snake(Graphics g)
 	{
 		for (int i = 0; i < nsnake; ++i) {
 			if (i == 0) 
@@ -54,6 +90,30 @@ public class Snake extends Applet implements KeyListener {
 					move_rect(i, g, false);
 			}
 		}
+	}
+	
+	public void move_rect(int i, Graphics g, boolean inc)
+	{
+		if (move_list[snake[i][2]] == UP)
+			snake[i][1] -= speed;
+		else if (move_list[snake[i][2]] == RIGHT)
+			snake[i][0] += speed;
+		else if (move_list[snake[i][2]] == DOWN)
+			snake[i][1] += speed;
+		else if (move_list[snake[i][2]] == LEFT)
+			snake[i][0] -= speed;
+		if (snake[i][2] < nmove - 1 && inc)
+			snake[i][2] += 1;
+		g.fillRect(snake[i][0], snake[i][1], 15, 15);
+	}
+	
+	public int get_rand(int max, int min)
+	{
+		return min + (int)(Math.random() * ((max - min) + 1));
+	}
+	
+	public void check_apple_collision(Graphics g)
+	{
 		if (snake[0][0] > x-14 && snake[0][0] < x+15 && snake[0][1] > y-14 && snake[0][1] < y+15)
 		{
 			score++;
@@ -79,56 +139,7 @@ public class Snake extends Applet implements KeyListener {
 			add_snake(addx, addy, snake[nsnake-1][2]);
 		}
 		g.fillRect(x, y, 15, 15);
-		PREV_MOVE = CURRENT_MOVE;
-		if (collision(snake[0][0], snake[0][1])) {
-			speed = 0;
-			Font font = new Font("Arial", Font.PLAIN, 30);
-		    g.setFont(font);
-		    g.drawString("GAME OVER", 275, 200);
-		}
-		update_score(g);
-		
-		repaint();
 	}
-	
-	public void add_snake(int x, int y, int dir)
-	{
-		snake[nsnake][0] = x;
-		snake[nsnake][1] = y;
-		snake[nsnake][2] = dir;
-		nsnake++;
-	}
-	
-	public boolean on_cord(int x, int y)
-	{
-		for (int i = 0; i < ncord; ++i)
-		{
-			if (cord_list[i][0] == x && cord_list[i][1] == y)
-				return true;
-		}
-		return false;
-	}
-	
-	public void move_rect(int i, Graphics g, boolean inc)
-	{
-		if (move_list[snake[i][2]] == UP)
-			snake[i][1] -= speed;
-		else if (move_list[snake[i][2]] == RIGHT)
-			snake[i][0] += speed;
-		else if (move_list[snake[i][2]] == DOWN)
-			snake[i][1] += speed;
-		else if (move_list[snake[i][2]] == LEFT)
-			snake[i][0] -= speed;
-		if (snake[i][2] < nmove - 1 && inc)
-			snake[i][2] += 1;
-		g.fillRect(snake[i][0], snake[i][1], 15, 15);
-	}
-	
-	public int get_rand(int max, int min)
-	{
-		return min + (int)(Math.random() * ((max - min) + 1));
-	}
-	
 	public boolean collision(int headx, int heady)
 	{
 		boolean collide = false;
@@ -138,18 +149,20 @@ public class Snake extends Applet implements KeyListener {
 		for (int i = 1; i < nsnake; ++i)
 		{
 			int x = snake[i][0], y = snake[i][1];
-			if (headx > x && headx < x+5 && heady > y && heady < y+5)
+			if (headx > x && headx < x+8 && heady > y && heady < y+8)
 				collide = true;
 		}
 		return collide;
-	} 
+	}
 	
 	public void end_game(Graphics g)
 	{
 		speed = 0;
 		Font font = new Font("Arial", Font.PLAIN, 30);
 	    g.setFont(font);
-	    g.drawString("GAME OVER", 400, 400);
+	    g.drawString("GAME OVER", 210, 200);
+	    g.drawString("Score: " + score, 210, 240);
+	    repaint();
 	}
 	
 	public void update_score(Graphics g)
@@ -170,19 +183,19 @@ public class Snake extends Applet implements KeyListener {
 			CURRENT_MOVE = UP;
 			up = true;
 		}
-		if (key == e.VK_RIGHT && dir != LEFT && dir != RIGHT) {
+		else if (key == e.VK_RIGHT && dir != LEFT && dir != RIGHT) {
 			NEXT_MOVE = RIGHT;
 			move_list[nmove++] = RIGHT;
 			CURRENT_MOVE = RIGHT;
 			right = true;
 		}
-		if (key == e.VK_DOWN && dir != UP && dir != DOWN) { 
+		else if (key == e.VK_DOWN && dir != UP && dir != DOWN) { 
 			NEXT_MOVE = DOWN;
 			move_list[nmove++] = DOWN;
 			CURRENT_MOVE = DOWN;
 			down = true;
 		}
-		if (key == e.VK_LEFT && dir != RIGHT && dir != LEFT) {
+		else if (key == e.VK_LEFT && dir != RIGHT && dir != LEFT) {
 			NEXT_MOVE = LEFT;
 			move_list[nmove++] = LEFT;
 			CURRENT_MOVE = LEFT;
