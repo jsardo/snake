@@ -121,7 +121,7 @@ public class Snake extends Applet implements KeyListener
 			score++;
 			x = get_rand(RAND_MAX, RAND_MIN);
 			y = get_rand(YMAX - 50, RAND_MIN);
-			int addx = 0, addy = 0; // for some reason Java yells at me if I don't initialize these :(
+			int addx = 0, addy = 0; 
 			if (move_list[snake[nsnake-1][2]] == UP) {
 				addx = snake[nsnake-1][0];
 				addy = snake[nsnake-1][1] + 15;
